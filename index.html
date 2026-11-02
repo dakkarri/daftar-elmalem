@@ -65,6 +65,13 @@ details.more summary{cursor:pointer;color:var(--ink2);font-size:14px;text-align:
 details.more summary::-webkit-details-marker{display:none}
 details.more .inner{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .btn.half{width:auto;flex:1}
+.homebtn{display:flex;align-items:center;gap:14px;width:100%;text-align:start;background:var(--page);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(37,31,33,.07);margin-bottom:12px;min-height:76px;cursor:pointer}
+.homebtn .ic{font-size:26px;color:var(--teal-d)}
+.homebtn .grow{flex:1;display:flex;flex-direction:column;min-width:0}
+.homebtn .t1{font-weight:700;font-size:17px}
+.homebtn .t2{font-size:13px;color:var(--ink2)}
+.homebtn .chev{color:var(--ink4);font-size:22px;font-weight:700}
+.homebtn:active{background:#f2f7f5}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .fact{background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:10px 12px}
 .fact .k{font-size:12px;color:var(--ink2)}
@@ -99,7 +106,10 @@ nav.tabs button.on{color:var(--teal-d);font-weight:700}
       <h1 id="appTitle">دفتر المعلم</h1>
       <div class="today" id="todayLine"></div>
     </div>
-    <button class="iconbtn" id="langBtn" title="Türkçe">TR</button>
+    <div style="display:flex;gap:2px">
+      <button class="iconbtn" id="gearBtn" title="⚙️">⚙️</button>
+      <button class="iconbtn" id="langBtn" title="Türkçe">TR</button>
+    </div>
   </header>
   <main id="view"></main>
   <nav class="tabs" id="tabs"></nav>
@@ -113,8 +123,11 @@ ar:{
   sites:'المواقع', addSite:'أضف موقع', siteName:'اسم الموقع', add:'أضف', cancel:'إلغاء', save:'حفظ',
   workersCount:'عدد العمال', chooseSite:'اختار الموقع', addWorker:'أضف عامل', workerName:'اسم العامل',
   dailyWage:'اليومية', startDate:'من تاريخ', noSites:'لسه مفيش مواقع. اضغط «أضف موقع» وابدأ.',
-  noWorkers:'لسه مفيش عمال. ضيفهم من تبويب «العمال».', noDays:'لسه مفيش حضور متسجل.',
+  noWorkers:'لسه مفيش عمال. ضيفهم من تبويب «حساب عامل».', noDays:'لسه مفيش حضور متسجل.',
   moreActions:'إجراءات أكتر',
+  home:'الرئيسية', workerAccount:'حساب عامل',
+  homeAttHint:'علّم حضور عمال النهارده', homeWorkerHint:'سلف ودفعات وكشف حساب', homeDaysHint:'مين اشتغل فين، يوم بيوم',
+  countOf:'من', viewStatement:'عرض الكشف',
   alreadyOtherSite:'متسجل النهارده في موقع', moveHere:'انقله هنا',
   daysWorked:'أيام الشغل', earned:'المستحق', advances:'السلف', payments:'الدفعات', remaining:'الباقي له',
   addAdvance:'سجّل سلفة', addPayment:'سجّل دفعة', amount:'المبلغ', note:'ملاحظة', changeWage:'غيّر اليومية', newWage:'اليومية الجديدة',
@@ -133,8 +146,11 @@ tr:{
   sites:'Şantiyeler', addSite:'Şantiye ekle', siteName:'Şantiye adı', add:'Ekle', cancel:'Vazgeç', save:'Kaydet',
   workersCount:'İşçi sayısı', chooseSite:'Şantiye seç', addWorker:'İşçi ekle', workerName:'İşçi adı',
   dailyWage:'Yevmiye', startDate:'Başlangıç tarihi', noSites:'Henüz şantiye yok. «Şantiye ekle» ile başla.',
-  noWorkers:'Henüz işçi yok. «İşçiler» sekmesinden ekle.', noDays:'Henüz yoklama kaydı yok.',
+  noWorkers:'Henüz işçi yok. «İşçi hesabı» sekmesinden ekle.', noDays:'Henüz yoklama kaydı yok.',
   moreActions:'Diğer işlemler',
+  home:'Ana sayfa', workerAccount:'İşçi hesabı',
+  homeAttHint:'Bugünkü yoklamayı işaretle', homeWorkerHint:'Avans, ödeme ve hesap özeti', homeDaysHint:'Her gün kim nerede çalıştı',
+  countOf:'/', viewStatement:'Özeti göster',
   alreadyOtherSite:'Bugün başka şantiyede kayıtlı', moveHere:'Buraya taşı',
   daysWorked:'Çalışılan gün', earned:'Hak ediş', advances:'Avanslar', payments:'Ödemeler', remaining:'Kalan',
   addAdvance:'Avans ekle', addPayment:'Ödeme ekle', amount:'Tutar', note:'Not', changeWage:'Yevmiyeyi değiştir', newWage:'Yeni yevmiye',
@@ -176,7 +192,7 @@ function workerStats(wid){const w=worker(wid);let days=0,earned=0;const list=[];
   return {days,earned,adv,advTotal,pays,payTotal,remaining:earned-advTotal-payTotal,list};}
 function shiftDay(iso,n){const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const initHash=(()=>{const h=(location.hash||'').slice(1);const [tab,arg]=h.split('/');
-  return {tab:['att','days','workers','settings'].includes(tab)?tab:'att',arg:arg||null};})();
+  return {tab:['home','att','days','workers','settings'].includes(tab)?tab:'home',arg:arg||null};})();
 let view={tab:initHash.tab,date:todayISO(),siteId:null,workerId:initHash.tab==='workers'?initHash.arg:null,dayFilter:null};
 let modal=null;
 const viewEl=document.getElementById('view');
@@ -192,14 +208,25 @@ function render(){
   document.getElementById('todayLine').textContent=fmtDate(todayISO(),true);
   const tabs=document.getElementById('tabs');
   tabs.innerHTML='';
-  [['att','✓',t.attendance],['days','🗓',t.days],['workers','👷',t.workers],['settings','⚙️',t.settings]].forEach(([k,ic,label])=>{
+  [['home','🏠',t.home],['att','✓',t.attendance],['workers','👷',t.workerAccount],['days','🗓',t.days]].forEach(([k,ic,label])=>{
     const b=document.createElement('button');b.className=view.tab===k?'on':'';b.innerHTML='<span class="ic">'+ic+'</span>'+label;
     b.onclick=()=>{view.tab=k;view.workerId=null;render();};tabs.appendChild(b);});
   viewEl.innerHTML='';
-  if(view.tab==='att')renderAtt();else if(view.tab==='days')renderDays();else if(view.tab==='workers')renderWorkers();else renderSettings();
+  if(view.tab==='home')renderHome();else if(view.tab==='att')renderAtt();else if(view.tab==='days')renderDays();else if(view.tab==='workers')renderWorkers();else renderSettings();
   clearModal();
   if(modal)renderModal();
   window.scrollTo(0,0);
+}
+
+/* ---------- Home ---------- */
+function renderHome(){
+  const t=T();const chev=S.lang==='ar'?'‹':'›';
+  const mk=(ic,label,hint,go)=>{
+    const b=el('<button type="button" class="homebtn"><span class="ic">'+ic+'</span><span class="grow"><span class="t1">'+label+'</span><span class="t2">'+hint+'</span></span><span class="chev">'+chev+'</span></button>');
+    b.onclick=go;return b;};
+  viewEl.appendChild(mk('✓',t.attendance,t.homeAttHint,()=>{view.tab='att';render();}));
+  viewEl.appendChild(mk('👷',t.workerAccount,t.homeWorkerHint,()=>{view.tab='workers';render();}));
+  viewEl.appendChild(mk('🗓',t.days,t.homeDaysHint,()=>{view.tab='days';render();}));
 }
 
 /* ---------- Attendance ---------- */
@@ -219,7 +246,7 @@ function renderAtt(){
     c.onclick=()=>{view.siteId=s.id;render();};chips.appendChild(c);});
   viewEl.appendChild(chips);
   const day=S.attendance[view.date]||{};const ids=(day[view.siteId]||[]);
-  const cb=el('<div class="countbar"><div><div class="small muted">'+fmtDate(view.date,true)+'</div><div class="small muted">'+siteName(view.siteId)+'</div></div><div class="num">'+nf().format(ids.length)+' / '+nf().format(S.workers.length)+'</div></div>');
+  const cb=el('<div class="countbar"><div><div class="small muted">'+fmtDate(view.date,true)+'</div><div class="small muted">'+siteName(view.siteId)+'</div></div><div class="num">'+nf().format(ids.length)+' '+t.countOf+' '+nf().format(S.workers.length)+'</div></div>');
   viewEl.appendChild(cb);
   if(!S.workers.length){viewEl.appendChild(el('<div class="card empty">'+t.noWorkers+'</div>'));}
   S.workers.forEach(w=>{
@@ -307,13 +334,15 @@ function renderWorkerDetail(wid){
   viewEl.appendChild(mf);
   // statement
   const stmt=buildStatement(w,st);
-  const sc=el('<div class="card"><h2>'+t.statement+'</h2><div class="stmt">'+esc(stmt)+'</div></div>');
-  const row=el('<div style="display:flex;gap:8px"></div>');
+  const sc=el('<div class="card"><h2>'+t.statement+'</h2></div>');
+  const row=el('<div style="display:flex;gap:8px;margin-bottom:4px"></div>');
   const cp=el('<button class="btn sec" style="flex:1">'+t.copy+'</button>');
   cp.onclick=()=>{navigator.clipboard.writeText(stmt).then(()=>{cp.textContent=t.copied;});};
   const wa=el('<button class="btn" style="flex:1">'+t.whatsapp+'</button>');
   wa.onclick=()=>{window.open('https://wa.me/?text='+encodeURIComponent(stmt),'_blank');};
-  row.append(cp,wa);sc.appendChild(row);viewEl.appendChild(sc);
+  row.append(cp,wa);sc.appendChild(row);
+  const det=el('<details class="more" style="margin:4px 0 0"><summary>'+t.viewStatement+'</summary><div class="stmt">'+esc(stmt)+'</div></details>');
+  sc.appendChild(det);viewEl.appendChild(sc);
   // days list
   const dc=el('<div class="card"><h2>'+t.hisDays+'</h2></div>');
   if(!st.list.length)dc.appendChild(el('<div class="muted small">'+t.noWorkersDay+'</div>'));
@@ -440,8 +469,9 @@ function renderModal(){
 }
 
 document.getElementById('langBtn').onclick=()=>{S.lang=S.lang==='ar'?'tr':'ar';save();render();};
+document.getElementById('gearBtn').onclick=()=>{view.tab='settings';view.workerId=null;render();};
 render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
-</html>
+      </html>
