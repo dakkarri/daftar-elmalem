@@ -66,7 +66,10 @@ details.more summary::-webkit-details-marker{display:none}
 details.more .inner{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .btn.half{width:auto;flex:1}
 .homebtn{display:flex;align-items:center;gap:14px;width:100%;text-align:start;background:var(--page);border-radius:16px;padding:18px 16px;box-shadow:0 1px 4px rgba(37,31,33,.07);margin-bottom:12px;min-height:76px;cursor:pointer}
-.homebtn .ic{font-size:26px;color:var(--teal-d)}
+.homebtn .ic{color:var(--teal-d)}
+.homebtn .ic svg{width:26px;height:26px;display:block}
+nav.tabs button .ic svg{width:21px;height:21px;display:block}
+.iconbtn svg{width:20px;height:20px;display:block}
 .homebtn .grow{flex:1;display:flex;flex-direction:column;min-width:0}
 .homebtn .t1{font-weight:700;font-size:17px}
 .homebtn .t2{font-size:13px;color:var(--ink2)}
@@ -107,7 +110,7 @@ nav.tabs button.on{color:var(--teal-d);font-weight:700}
       <div class="today" id="todayLine"></div>
     </div>
     <div style="display:flex;gap:2px">
-      <button class="iconbtn" id="gearBtn" title="⚙️">⚙️</button>
+      <button class="iconbtn" id="gearBtn" title="⚙️"></button>
       <button class="iconbtn" id="langBtn" title="Türkçe">TR</button>
     </div>
   </header>
@@ -196,6 +199,12 @@ const initHash=(()=>{const h=(location.hash||'').slice(1);const [tab,arg]=h.spli
 let view={tab:initHash.tab,date:todayISO(),siteId:null,workerId:initHash.tab==='workers'?initHash.arg:null,dayFilter:null};
 let modal=null;
 const viewEl=document.getElementById('view');
+const IC={
+home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>',
+att:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 5-5.5"/></svg>',
+workers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15a8 8 0 0 1 5-7.5V11a3 3 0 0 0 6 0V7.5A8 8 0 0 1 20 15z"/><path d="M3 15h18v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>',
+days:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'};
 function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstElementChild;}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -208,7 +217,7 @@ function render(){
   document.getElementById('todayLine').textContent=fmtDate(todayISO(),true);
   const tabs=document.getElementById('tabs');
   tabs.innerHTML='';
-  [['home','🏠',t.home],['att','✓',t.attendance],['workers','👷',t.workerAccount],['days','🗓',t.days]].forEach(([k,ic,label])=>{
+  [['home',IC.home,t.home],['att',IC.att,t.attendance],['workers',IC.workers,t.workerAccount],['days',IC.days,t.days]].forEach(([k,ic,label])=>{
     const b=document.createElement('button');b.className=view.tab===k?'on':'';b.innerHTML='<span class="ic">'+ic+'</span>'+label;
     b.onclick=()=>{view.tab=k;view.workerId=null;render();};tabs.appendChild(b);});
   viewEl.innerHTML='';
@@ -224,9 +233,9 @@ function renderHome(){
   const mk=(ic,label,hint,go)=>{
     const b=el('<button type="button" class="homebtn"><span class="ic">'+ic+'</span><span class="grow"><span class="t1">'+label+'</span><span class="t2">'+hint+'</span></span><span class="chev">'+chev+'</span></button>');
     b.onclick=go;return b;};
-  viewEl.appendChild(mk('✓',t.attendance,t.homeAttHint,()=>{view.tab='att';render();}));
-  viewEl.appendChild(mk('👷',t.workerAccount,t.homeWorkerHint,()=>{view.tab='workers';render();}));
-  viewEl.appendChild(mk('🗓',t.days,t.homeDaysHint,()=>{view.tab='days';render();}));
+  viewEl.appendChild(mk(IC.att,t.attendance,t.homeAttHint,()=>{view.tab='att';render();}));
+  viewEl.appendChild(mk(IC.workers,t.workerAccount,t.homeWorkerHint,()=>{view.tab='workers';render();}));
+  viewEl.appendChild(mk(IC.days,t.days,t.homeDaysHint,()=>{view.tab='days';render();}));
 }
 
 /* ---------- Attendance ---------- */
@@ -346,7 +355,7 @@ function renderWorkerDetail(wid){
   // days list
   const dc=el('<div class="card"><h2>'+t.hisDays+'</h2></div>');
   if(!st.list.length)dc.appendChild(el('<div class="muted small">'+t.noWorkersDay+'</div>'));
-  st.list.forEach(a=>{dc.appendChild(el('<div class="row" style="min-height:44px;padding:8px 12px"><div class="grow"><div class="name" style="font-size:14px">'+fmtDate(a.date)+' <span class="muted">'+fmtDateShort(a.date)+'</span></div><div class="sub">'+esc(siteName(a.sid))+'</div></div><div class="sub">'+fmtMoney(a.wage)+'</div></div>'));});
+  st.list.forEach(a=>{dc.appendChild(el('<div class="row" style="min-height:44px;padding:8px 12px"><div class="grow"><div class="name" style="font-size:14px">'+fmtDate(a.date)+'</div><div class="sub">'+esc(siteName(a.sid))+'</div></div><div class="sub">'+fmtMoney(a.wage)+'</div></div>'));});
   viewEl.appendChild(dc);
   // advances list
   const ac=el('<div class="card"><h2>'+t.hisAdvances+'</h2></div>');
@@ -469,6 +478,7 @@ function renderModal(){
 }
 
 document.getElementById('langBtn').onclick=()=>{S.lang=S.lang==='ar'?'tr':'ar';save();render();};
+document.getElementById('gearBtn').innerHTML=IC.gear;
 document.getElementById('gearBtn').onclick=()=>{view.tab='settings';view.workerId=null;render();};
 render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
