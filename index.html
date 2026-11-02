@@ -103,10 +103,10 @@ ar:{
   dailyWage:'اليومية', startDate:'من تاريخ', noSites:'لسه مفيش مواقع. اضغط «أضف موقع» وابدأ.',
   noWorkers:'لسه مفيش عمال. ضيفهم من تحت.', noDays:'لسه مفيش حضور متسجل.',
   alreadyOtherSite:'متسجل النهارده في موقع', moveHere:'انقله هنا',
-  daysWorked:'أيام الشغل', earned:'المستحق', advances:'السلف', remaining:'الباقي له',
-  addAdvance:'سجّل سلفة', amount:'المبلغ', note:'ملاحظة', changeWage:'غيّر اليومية', newWage:'اليومية الجديدة',
+  daysWorked:'أيام الشغل', earned:'المستحق', advances:'السلف', payments:'الدفعات', remaining:'الباقي له',
+  addAdvance:'سجّل سلفة', addPayment:'سجّل دفعة', amount:'المبلغ', note:'ملاحظة', changeWage:'غيّر اليومية', newWage:'اليومية الجديدة',
   statement:'كشف حساب', copy:'نسخ الكشف', whatsapp:'ابعته على واتساب', copied:'اتنسخ ✓',
-  hisDays:'أيام شغله', hisAdvances:'سلفه', del:'مسح', edit:'تعديل', confirmDelWorker:'مسح العامل ده وكل حضوره وسلفه؟',
+  hisDays:'أيام شغله', hisAdvances:'سلفه', hisPayments:'دفعاته', del:'مسح', edit:'تعديل', confirmDelWorker:'مسح العامل ده وكل حضوره وسلفه؟',
   language:'اللغة', currency:'العملة', backup:'نسخة احتياطية', export:'تصدير البيانات', importBtn:'استرجاع نسخة',
   clearAll:'مسح كل البيانات', confirmClear:'متأكد؟ كل الحضور والحسابات هتتمسح من الموبايل ده.',
   localNote:'البيانات بتتحفظ على الموبايل ده بس. اعمل نسخة احتياطية كل فترة من هنا.',
@@ -122,10 +122,10 @@ tr:{
   dailyWage:'Yevmiye', startDate:'Başlangıç tarihi', noSites:'Henüz şantiye yok. «Şantiye ekle» ile başla.',
   noWorkers:'Henüz işçi yok. Aşağıdan ekle.', noDays:'Henüz yoklama kaydı yok.',
   alreadyOtherSite:'Bugün başka şantiyede kayıtlı', moveHere:'Buraya taşı',
-  daysWorked:'Çalışılan gün', earned:'Hak ediş', advances:'Avanslar', remaining:'Kalan',
-  addAdvance:'Avans ekle', amount:'Tutar', note:'Not', changeWage:'Yevmiyeyi değiştir', newWage:'Yeni yevmiye',
+  daysWorked:'Çalışılan gün', earned:'Hak ediş', advances:'Avanslar', payments:'Ödemeler', remaining:'Kalan',
+  addAdvance:'Avans ekle', addPayment:'Ödeme ekle', amount:'Tutar', note:'Not', changeWage:'Yevmiyeyi değiştir', newWage:'Yeni yevmiye',
   statement:'Hesap özeti', copy:'Özeti kopyala', whatsapp:'WhatsApp ile gönder', copied:'Kopyalandı ✓',
-  hisDays:'Çalıştığı günler', hisAdvances:'Avansları', del:'Sil', edit:'Düzenle', confirmDelWorker:'Bu işçi ve tüm kayıtları silinsin mi?',
+  hisDays:'Çalıştığı günler', hisAdvances:'Avansları', hisPayments:'Ödemeleri', del:'Sil', edit:'Düzenle', confirmDelWorker:'Bu işçi ve tüm kayıtları silinsin mi?',
   language:'Dil', currency:'Para birimi', backup:'Yedek', export:'Verileri dışa aktar', importBtn:'Yedeği geri yükle',
   clearAll:'Tüm verileri sil', confirmClear:'Emin misin? Bu telefondaki tüm kayıtlar silinecek.',
   localNote:'Veriler sadece bu telefonda saklanır. Buradan düzenli yedek al.',
@@ -155,9 +155,11 @@ function* allAttendance(){for(const [date,sites] of Object.entries(S.attendance)
 function workerStats(wid){const w=worker(wid);let days=0,earned=0;const list=[];
   for(const a of allAttendance())if(a.wid===wid){const wg=wageAt(w,a.date);days++;earned+=wg;list.push({...a,wage:wg});}
   list.sort((a,b)=>b.date.localeCompare(a.date));
-  const adv=S.advances.filter(x=>x.workerId===wid);
+  const adv=S.advances.filter(x=>x.workerId===wid&&x.kind!=='pay');
+  const pays=S.advances.filter(x=>x.workerId===wid&&x.kind==='pay');
   const advTotal=adv.reduce((s,x)=>s+x.amount,0);
-  return {days,earned,adv,advTotal,remaining:earned-advTotal,list};}
+  const payTotal=pays.reduce((s,x)=>s+x.amount,0);
+  return {days,earned,adv,advTotal,pays,payTotal,remaining:earned-advTotal-payTotal,list};}
 const initHash=(()=>{const h=(location.hash||'').slice(1);const [tab,arg]=h.split('/');
   return {tab:['att','days','workers','settings'].includes(tab)?tab:'att',arg:arg||null};})();
 let view={tab:initHash.tab,date:todayISO(),siteId:null,workerId:initHash.tab==='workers'?initHash.arg:null,dayFilter:null};
@@ -281,14 +283,16 @@ function renderWorkerDetail(wid){
     '<div class="fact"><div class="k">'+t.daysWorked+'</div><div class="v">'+nf().format(st.days)+'</div></div>'+
     '<div class="fact"><div class="k">'+t.earned+'</div><div class="v">'+fmtMoney(st.earned)+'</div></div>'+
     '<div class="fact"><div class="k">'+t.advances+'</div><div class="v">'+fmtMoney(st.advTotal)+'</div></div>'+
+    '<div class="fact"><div class="k">'+t.payments+'</div><div class="v">'+fmtMoney(st.payTotal)+'</div></div>'+
     '<div class="fact big"><div class="k">'+t.remaining+'</div><div class="v">'+fmtMoney(st.remaining)+'</div></div></div>');
   viewEl.appendChild(f);
   const acts=el('<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>');
   const b1=el('<button class="btn sec small">'+t.addAdvance+'</button>');b1.onclick=()=>{modal={type:'advance',wid};render();};
+  const b1p=el('<button class="btn sec small">'+t.addPayment+'</button>');b1p.onclick=()=>{modal={type:'payment',wid};render();};
   const b2=el('<button class="btn sec small">'+t.changeWage+'</button>');b2.onclick=()=>{modal={type:'wage',wid};render();};
   const b3=el('<button class="btn sec small">'+t.edit+'</button>');b3.onclick=()=>{modal={type:'editWorker',wid};render();};
   const b4=el('<button class="btn danger small">'+t.del+'</button>');b4.onclick=()=>{if(confirm(t.confirmDelWorker)){S.workers=S.workers.filter(x=>x.id!==wid);S.advances=S.advances.filter(x=>x.workerId!==wid);for(const[d,ss]of Object.entries(S.attendance))for(const[s,l]of Object.entries(ss)){const i=l.indexOf(wid);if(i>=0)l.splice(i,1);}view.workerId=null;save();render();}};
-  acts.append(b1,b2,b3,b4);viewEl.appendChild(acts);
+  acts.append(b1,b1p,b2,b3,b4);viewEl.appendChild(acts);
   // statement
   const stmt=buildStatement(w,st);
   const sc=el('<div class="card"><h2>'+t.statement+'</h2><div class="stmt">'+esc(stmt)+'</div></div>');
@@ -312,6 +316,14 @@ function renderWorkerDetail(wid){
     db.onclick=()=>{S.advances=S.advances.filter(y=>y.id!==x.id);save();render();};
     r.appendChild(db);ac.appendChild(r);});
   viewEl.appendChild(ac);
+  const pc=el('<div class="card"><h2>'+t.hisPayments+'</h2></div>');
+  if(!st.pays.length)pc.appendChild(el('<div class="muted small">—</div>'));
+  st.pays.sort((a,b)=>b.date.localeCompare(a.date)).forEach(x=>{
+    const r=el('<div class="row" style="min-height:44px;padding:8px 12px"><div class="grow"><div class="name" style="font-size:14px">'+fmtMoney(x.amount)+'</div><div class="sub">'+fmtDate(x.date)+(x.note?' · '+esc(x.note):'')+'</div></div></div>');
+    const db=el('<button class="iconbtn del">✕</button>');db.title=t.deleteRow;
+    db.onclick=()=>{S.advances=S.advances.filter(y=>y.id!==x.id);save();render();};
+    r.appendChild(db);pc.appendChild(r);});
+  viewEl.appendChild(pc);
 }
 function buildStatement(w,st){
   const t=T();
@@ -321,6 +333,7 @@ function buildStatement(w,st){
   L.push(t.daysWorked+': '+nf().format(st.days));
   L.push(t.earned+': '+fmtMoney(st.earned));
   L.push(t.advances+': '+fmtMoney(st.advTotal));
+  L.push(t.payments+': '+fmtMoney(st.payTotal));
   L.push(t.remaining+': '+fmtMoney(st.remaining));
   if(st.list.length){L.push('');L.push(t.hisDays+':');
     [...st.list].sort((a,b)=>a.date.localeCompare(b.date)).forEach(a=>L.push('· '+fmtDate(a.date)+' - '+siteName(a.sid)));}
@@ -373,13 +386,13 @@ function renderModal(){
     ok.onclick=()=>{const n=sh.querySelector('#f1').value.trim();const w=parseFloat(sh.querySelector('#f2').value);const d=sh.querySelector('#f3').value||todayISO();
       if(!n||!(w>0))return;S.workers.push({id:uid(),name:n,history:[{from:d,daily:w}]});save();close();};
     sh.appendChild(a);
-  }else if(m.type==='advance'){
-    sh.innerHTML='<h3>'+t.addAdvance+'</h3><label>'+t.amount+' ('+S.currency+')</label><input id="f1" type="number" inputmode="decimal" min="0" step="any"><label>'+t.date+'</label><input id="f2" type="date"><label>'+t.note+'</label><input id="f3" maxlength="80">';
+  }else if(m.type==='advance'||m.type==='payment'){
+    sh.innerHTML='<h3>'+(m.type==='payment'?t.addPayment:t.addAdvance)+'</h3><label>'+t.amount+' ('+S.currency+')</label><input id="f1" type="number" inputmode="decimal" min="0" step="any"><label>'+t.date+'</label><input id="f2" type="date"><label>'+t.note+'</label><input id="f3" maxlength="80">';
     sh.querySelector('#f2').value=todayISO();
     const a=el('<div class="actions"><button class="btn sec">'+t.cancel+'</button><button class="btn">'+t.save+'</button></div>');
     const [c,ok]=a.children;c.onclick=close;
     ok.onclick=()=>{const amt=parseFloat(sh.querySelector('#f1').value);if(!(amt>0))return;
-      S.advances.push({id:uid(),workerId:m.wid,amount:amt,date:sh.querySelector('#f2').value||todayISO(),note:sh.querySelector('#f3').value.trim()});save();close();};
+      S.advances.push({id:uid(),workerId:m.wid,amount:amt,date:sh.querySelector('#f2').value||todayISO(),note:sh.querySelector('#f3').value.trim(),kind:m.type==='payment'?'pay':undefined});save();close();};
     sh.appendChild(a);
   }else if(m.type==='wage'){
     const w=worker(m.wid);
