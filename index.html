@@ -25,14 +25,14 @@ header.top{position:sticky;top:0;z-index:20;background:var(--sand);padding:calc(
 header.top h1{font-size:20px;margin:0;font-weight:700}
 header.top .today{color:var(--ink2);font-size:13px}
 main{flex:1;padding:14px 16px 96px}
-.card{background:var(--page);border-radius:var(--r);padding:14px;margin-bottom:12px;border:1px solid var(--hair)}
+.card{background:var(--page);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(37,31,33,.07)}
 .muted{color:var(--ink2)}
 .small{font-size:13px}
 h2{font-size:16px;margin:0 0 10px}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .chip{border:1px solid var(--hair);background:var(--page);color:var(--ink);border-radius:999px;padding:10px 16px;font-size:15px;min-height:44px;cursor:pointer}
 .chip.on{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
-.row{display:flex;align-items:center;gap:10px;background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;min-height:52px}
+.row{display:flex;align-items:center;gap:10px;background:var(--page);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;min-height:60px;box-shadow:0 1px 4px rgba(37,31,33,.07)}
 .row .grow{flex:1;min-width:0}
 .row .name{font-weight:600}
 .row .sub{color:var(--ink2);font-size:13px}
@@ -44,15 +44,27 @@ button{font-family:inherit;font-size:16px;border:none;border-radius:10px;cursor:
 .iconbtn{background:none;border:none;padding:8px;min-height:44px;min-width:44px;color:var(--ink2);font-size:18px;cursor:pointer}
 input,select{font-family:inherit;font-size:16px;padding:12px;border:1px solid var(--hair);border-radius:10px;width:100%;background:#fff;color:var(--ink);min-height:48px}
 label{display:block;font-size:13px;color:var(--ink2);margin:10px 0 4px}
-.check{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink4);display:flex;align-items:center;justify-content:center;flex:none;font-size:17px;color:#fff;background:#fff}
+.check{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink4);display:flex;align-items:center;justify-content:center;flex:none;font-size:17px;color:#fff;background:#fff}
 .on .check{background:var(--teal);border-color:var(--teal)}
-.row.on{border-color:var(--teal);background:#f2f7f5}
+.row.on{background:#f2f7f5;box-shadow:0 0 0 2px var(--teal)}
 .rowbtn{width:100%;text-align:start}
 .rowbtn .grow{display:flex;flex-direction:column;min-width:0}
 .rowbtn .name,.rowbtn .sub{display:block}
 .warn{background:#fdf6e8;border:1px solid #ecd9a8;border-radius:10px;padding:10px 12px;margin:0 0 8px;font-size:14px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
-.countbar{background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.countbar .num{font-size:22px;font-weight:700;color:var(--teal-d)}
+.countbar{background:var(--page);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(37,31,33,.07)}
+.countbar .num{font-size:26px;font-weight:700;color:var(--teal-d)}
+.datestrip{display:flex;align-items:center;justify-content:space-between;gap:6px;background:var(--page);border-radius:var(--r);padding:6px 8px;margin-bottom:12px;box-shadow:0 1px 4px rgba(37,31,33,.07)}
+.datestrip input[type=date]{border:none;background:transparent;width:auto;min-height:40px;padding:4px;font-weight:600;font-size:15px;text-align:center;color:var(--ink)}
+.daynav{background:#f2f7f5;color:var(--teal-d);border:none;border-radius:10px;min-width:44px;min-height:40px;font-size:20px;font-weight:700;padding:4px 10px;cursor:pointer}
+.minifacts{display:flex;background:var(--page);border-radius:var(--r);box-shadow:0 1px 4px rgba(37,31,33,.07);padding:10px 4px;margin-bottom:12px}
+.minifacts>div{flex:1;text-align:center;min-width:0}
+.minifacts .k{font-size:11px;color:var(--ink2)}
+.minifacts .v{font-size:15px;font-weight:700}
+details.more{margin:16px 0 4px}
+details.more summary{cursor:pointer;color:var(--ink2);font-size:14px;text-align:center;padding:10px;list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more .inner{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn.half{width:auto;flex:1}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .fact{background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:10px 12px}
 .fact .k{font-size:12px;color:var(--ink2)}
@@ -97,11 +109,12 @@ nav.tabs button.on{color:var(--teal-d);font-weight:700}
 const KEY='daftar-elmalem.v1';
 const STR={
 ar:{
-  appName:'دفتر المعلم', attendance:'الحضور', days:'الأيام', workers:'العمال', settings:'الإعدادات',
+  appName:'دفتر المعلم', attendance:'حضور اليوم', days:'سجل الأيام', workers:'العمال', settings:'الإعدادات',
   sites:'المواقع', addSite:'أضف موقع', siteName:'اسم الموقع', add:'أضف', cancel:'إلغاء', save:'حفظ',
   workersCount:'عدد العمال', chooseSite:'اختار الموقع', addWorker:'أضف عامل', workerName:'اسم العامل',
   dailyWage:'اليومية', startDate:'من تاريخ', noSites:'لسه مفيش مواقع. اضغط «أضف موقع» وابدأ.',
-  noWorkers:'لسه مفيش عمال. ضيفهم من تحت.', noDays:'لسه مفيش حضور متسجل.',
+  noWorkers:'لسه مفيش عمال. ضيفهم من تبويب «العمال».', noDays:'لسه مفيش حضور متسجل.',
+  moreActions:'إجراءات أكتر',
   alreadyOtherSite:'متسجل النهارده في موقع', moveHere:'انقله هنا',
   daysWorked:'أيام الشغل', earned:'المستحق', advances:'السلف', payments:'الدفعات', remaining:'الباقي له',
   addAdvance:'سجّل سلفة', addPayment:'سجّل دفعة', amount:'المبلغ', note:'ملاحظة', changeWage:'غيّر اليومية', newWage:'اليومية الجديدة',
@@ -116,11 +129,12 @@ ar:{
   noWorkersDay:'مفيش عمال متسجلين في اليوم ده', all:'الكل'
 },
 tr:{
-  appName:'Usta Defteri', attendance:'Yoklama', days:'Günler', workers:'İşçiler', settings:'Ayarlar',
+  appName:'Usta Defteri', attendance:'Bugün yoklama', days:'Kayıtlar', workers:'İşçiler', settings:'Ayarlar',
   sites:'Şantiyeler', addSite:'Şantiye ekle', siteName:'Şantiye adı', add:'Ekle', cancel:'Vazgeç', save:'Kaydet',
   workersCount:'İşçi sayısı', chooseSite:'Şantiye seç', addWorker:'İşçi ekle', workerName:'İşçi adı',
   dailyWage:'Yevmiye', startDate:'Başlangıç tarihi', noSites:'Henüz şantiye yok. «Şantiye ekle» ile başla.',
-  noWorkers:'Henüz işçi yok. Aşağıdan ekle.', noDays:'Henüz yoklama kaydı yok.',
+  noWorkers:'Henüz işçi yok. «İşçiler» sekmesinden ekle.', noDays:'Henüz yoklama kaydı yok.',
+  moreActions:'Diğer işlemler',
   alreadyOtherSite:'Bugün başka şantiyede kayıtlı', moveHere:'Buraya taşı',
   daysWorked:'Çalışılan gün', earned:'Hak ediş', advances:'Avanslar', payments:'Ödemeler', remaining:'Kalan',
   addAdvance:'Avans ekle', addPayment:'Ödeme ekle', amount:'Tutar', note:'Not', changeWage:'Yevmiyeyi değiştir', newWage:'Yeni yevmiye',
@@ -160,6 +174,7 @@ function workerStats(wid){const w=worker(wid);let days=0,earned=0;const list=[];
   const advTotal=adv.reduce((s,x)=>s+x.amount,0);
   const payTotal=pays.reduce((s,x)=>s+x.amount,0);
   return {days,earned,adv,advTotal,pays,payTotal,remaining:earned-advTotal-payTotal,list};}
+function shiftDay(iso,n){const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 const initHash=(()=>{const h=(location.hash||'').slice(1);const [tab,arg]=h.split('/');
   return {tab:['att','days','workers','settings'].includes(tab)?tab:'att',arg:arg||null};})();
 let view={tab:initHash.tab,date:todayISO(),siteId:null,workerId:initHash.tab==='workers'?initHash.arg:null,dayFilter:null};
@@ -193,13 +208,15 @@ function renderAtt(){
   if(!S.sites.length){viewEl.appendChild(el('<div class="card empty">'+t.noSites+'<br><br><button class="btn" id="addSiteBtn">'+t.addSite+'</button></div>'));
     document.getElementById('addSiteBtn').onclick=()=>{modal={type:'site'};render();};return;}
   if(!view.siteId||!S.sites.find(s=>s.id===view.siteId))view.siteId=S.sites[0].id;
-  const bar=el('<div class="card"><label>'+t.date+'</label><input type="date" id="dpick"></div>');
+  const arrowPrev=S.lang==='ar'?'›':'‹', arrowNext=S.lang==='ar'?'‹':'›';
+  const bar=el('<div class="datestrip"><button type="button" class="daynav" id="prevD">'+arrowPrev+'</button><input type="date" id="dpick"><button type="button" class="daynav" id="nextD">'+arrowNext+'</button></div>');
   viewEl.appendChild(bar);
   const dp=bar.querySelector('#dpick');dp.value=view.date;dp.onchange=()=>{view.date=dp.value||todayISO();render();};
+  bar.querySelector('#prevD').onclick=()=>{view.date=shiftDay(view.date,-1);render();};
+  bar.querySelector('#nextD').onclick=()=>{view.date=shiftDay(view.date,1);render();};
   const chips=el('<div class="chips"></div>');
   S.sites.forEach(s=>{const c=document.createElement('button');c.className='chip'+(s.id===view.siteId?' on':'');c.textContent=s.name;
     c.onclick=()=>{view.siteId=s.id;render();};chips.appendChild(c);});
-  const addC=document.createElement('button');addC.className='chip';addC.textContent='＋ '+t.addSite;addC.onclick=()=>{modal={type:'site'};render();};chips.appendChild(addC);
   viewEl.appendChild(chips);
   const day=S.attendance[view.date]||{};const ids=(day[view.siteId]||[]);
   const cb=el('<div class="countbar"><div><div class="small muted">'+fmtDate(view.date,true)+'</div><div class="small muted">'+siteName(view.siteId)+'</div></div><div class="num">'+nf().format(ids.length)+' / '+nf().format(S.workers.length)+'</div></div>');
@@ -216,9 +233,6 @@ function renderAtt(){
       wn.querySelector('button').onclick=()=>{moveAtt(w.id,otherSite[0]);};
       viewEl.appendChild(wn);}
   });
-  const bw=el('<button class="btn sec" style="margin-top:6px">＋ '+t.addWorker+'</button>');
-  bw.onclick=()=>{modal={type:'worker'};render();};
-  viewEl.appendChild(bw);
 }
 function toggleAtt(wid){
   const day=S.attendance[view.date]=S.attendance[view.date]||{};
@@ -279,20 +293,18 @@ function renderWorkerDetail(wid){
   const back=el('<button class="btn sec small" style="margin-bottom:10px">← '+t.back+'</button>');
   back.onclick=()=>{view.workerId=null;render();};viewEl.appendChild(back);
   const f=el('<div class="facts">'+
-    '<div class="fact"><div class="k">'+t.dailyWage+'</div><div class="v">'+fmtMoney(currentWage(w))+'</div></div>'+
-    '<div class="fact"><div class="k">'+t.daysWorked+'</div><div class="v">'+nf().format(st.days)+'</div></div>'+
-    '<div class="fact"><div class="k">'+t.earned+'</div><div class="v">'+fmtMoney(st.earned)+'</div></div>'+
-    '<div class="fact"><div class="k">'+t.advances+'</div><div class="v">'+fmtMoney(st.advTotal)+'</div></div>'+
-    '<div class="fact"><div class="k">'+t.payments+'</div><div class="v">'+fmtMoney(st.payTotal)+'</div></div>'+
     '<div class="fact big"><div class="k">'+t.remaining+'</div><div class="v">'+fmtMoney(st.remaining)+'</div></div></div>');
   viewEl.appendChild(f);
-  const acts=el('<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>');
-  const b1=el('<button class="btn sec small">'+t.addAdvance+'</button>');b1.onclick=()=>{modal={type:'advance',wid};render();};
-  const b1p=el('<button class="btn sec small">'+t.addPayment+'</button>');b1p.onclick=()=>{modal={type:'payment',wid};render();};
-  const b2=el('<button class="btn sec small">'+t.changeWage+'</button>');b2.onclick=()=>{modal={type:'wage',wid};render();};
-  const b3=el('<button class="btn sec small">'+t.edit+'</button>');b3.onclick=()=>{modal={type:'editWorker',wid};render();};
-  const b4=el('<button class="btn danger small">'+t.del+'</button>');b4.onclick=()=>{if(confirm(t.confirmDelWorker)){S.workers=S.workers.filter(x=>x.id!==wid);S.advances=S.advances.filter(x=>x.workerId!==wid);for(const[d,ss]of Object.entries(S.attendance))for(const[s,l]of Object.entries(ss)){const i=l.indexOf(wid);if(i>=0)l.splice(i,1);}view.workerId=null;save();render();}};
-  acts.append(b1,b1p,b2,b3,b4);viewEl.appendChild(acts);
+  const acts=el('<div style="display:flex;gap:8px;margin-bottom:12px"></div>');
+  const b1=el('<button class="btn sec half">'+t.addAdvance+'</button>');b1.onclick=()=>{modal={type:'advance',wid};render();};
+  const b1p=el('<button class="btn half">'+t.addPayment+'</button>');b1p.onclick=()=>{modal={type:'payment',wid};render();};
+  acts.append(b1,b1p);viewEl.appendChild(acts);
+  const mf=el('<div class="minifacts">'+
+    '<div><div class="k">'+t.daysWorked+'</div><div class="v">'+nf().format(st.days)+'</div></div>'+
+    '<div><div class="k">'+t.earned+'</div><div class="v">'+fmtMoney(st.earned)+'</div></div>'+
+    '<div><div class="k">'+t.advances+'</div><div class="v">'+fmtMoney(st.advTotal)+'</div></div>'+
+    '<div><div class="k">'+t.payments+'</div><div class="v">'+fmtMoney(st.payTotal)+'</div></div></div>');
+  viewEl.appendChild(mf);
   // statement
   const stmt=buildStatement(w,st);
   const sc=el('<div class="card"><h2>'+t.statement+'</h2><div class="stmt">'+esc(stmt)+'</div></div>');
@@ -324,6 +336,12 @@ function renderWorkerDetail(wid){
     db.onclick=()=>{S.advances=S.advances.filter(y=>y.id!==x.id);save();render();};
     r.appendChild(db);pc.appendChild(r);});
   viewEl.appendChild(pc);
+  const more=el('<details class="more"><summary>'+t.moreActions+'</summary><div class="inner"></div></details>');
+  const mi=more.querySelector('.inner');
+  const b2=el('<button class="btn sec small">'+t.changeWage+' ('+fmtMoney(currentWage(w))+')</button>');b2.onclick=()=>{modal={type:'wage',wid};render();};
+  const b3=el('<button class="btn sec small">'+t.edit+'</button>');b3.onclick=()=>{modal={type:'editWorker',wid};render();};
+  const b4=el('<button class="btn danger small">'+t.del+'</button>');b4.onclick=()=>{if(confirm(t.confirmDelWorker)){S.workers=S.workers.filter(x=>x.id!==wid);S.advances=S.advances.filter(x=>x.workerId!==wid);for(const[d,ss]of Object.entries(S.attendance))for(const[s,l]of Object.entries(ss)){const i=l.indexOf(wid);if(i>=0)l.splice(i,1);}view.workerId=null;save();render();}};
+  mi.append(b2,b3,b4);viewEl.appendChild(more);
 }
 function buildStatement(w,st){
   const t=T();
@@ -351,6 +369,11 @@ function renderSettings(){
   const cc=curCard.querySelector('.chips');
   [['₺','₺ ليرة'],['ج.م','ج.م جنيه'],['$','$ دولار']].forEach(([v,l])=>{const c=document.createElement('button');c.className='chip'+(S.currency===v?' on':'');c.textContent=l;c.onclick=()=>{S.currency=v;save();render();};cc.appendChild(c);});
   viewEl.appendChild(curCard);
+  const sCard=el('<div class="card"><h2>'+t.sites+'</h2><div class="chips"></div></div>');
+  const sc2=sCard.querySelector('.chips');
+  S.sites.forEach(s=>{const c=document.createElement('span');c.className='chip';c.textContent=s.name;sc2.appendChild(c);});
+  const addS=document.createElement('button');addS.className='chip';addS.textContent='＋ '+t.addSite;addS.onclick=()=>{modal={type:'site'};render();};sc2.appendChild(addS);
+  viewEl.appendChild(sCard);
   const bCard=el('<div class="card"><h2>'+t.backup+'</h2><div class="notice">'+t.localNote+'</div></div>');
   const be=el('<button class="btn sec" style="width:100%;margin-bottom:8px">'+t.export+'</button>');
   be.onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='daftar-backup-'+todayISO()+'.json';a.click();};
@@ -421,4 +444,4 @@ render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
-                                             </html>
+</html>
