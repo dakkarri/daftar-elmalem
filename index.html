@@ -178,6 +178,7 @@ function render(){
     b.onclick=()=>{view.tab=k;view.workerId=null;render();};tabs.appendChild(b);});
   viewEl.innerHTML='';
   if(view.tab==='att')renderAtt();else if(view.tab==='days')renderDays();else if(view.tab==='workers')renderWorkers();else renderSettings();
+  clearModal();
   if(modal)renderModal();
   window.scrollTo(0,0);
 }
@@ -348,7 +349,9 @@ function renderSettings(){
 }
 
 /* ---------- Modals ---------- */
+function clearModal(){document.querySelectorAll('.modal').forEach(x=>x.remove());}
 function renderModal(){
+  clearModal();
   const t=T();const m=modal;
   const wrap=el('<div class="modal"><div class="sheet"></div></div>');
   const sh=wrap.querySelector('.sheet');
@@ -403,4 +406,4 @@ render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
-</html>
+                                             </html>
