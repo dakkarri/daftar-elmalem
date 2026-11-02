@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f4efec">
+<meta name="mobile-web-app-capable" content="yes">
+<title>دفتر المعلم</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<style>
+:root{
+  --sand:#f4efec; --page:#ffffff; --ink:#251f21; --ink2:#585254; --ink4:#c0bebf;
+  --hair:#eae9ea; --teal:#73a89a; --teal-d:#4f8577; --red:#d92632; --red-bg:#fdecec;
+  --r:14px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--sand);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;font-size:16px;line-height:1.5}
+#app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--sand)}
+header.top{position:sticky;top:0;z-index:20;background:var(--sand);padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--hair)}
+header.top h1{font-size:20px;margin:0;font-weight:700}
+header.top .today{color:var(--ink2);font-size:13px}
+main{flex:1;padding:14px 16px 96px}
+.card{background:var(--page);border-radius:var(--r);padding:14px;margin-bottom:12px;border:1px solid var(--hair)}
+.muted{color:var(--ink2)}
+.small{font-size:13px}
+h2{font-size:16px;margin:0 0 10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--hair);background:var(--page);color:var(--ink);border-radius:999px;padding:10px 16px;font-size:15px;min-height:44px;cursor:pointer}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+.row{display:flex;align-items:center;gap:10px;background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;min-height:52px}
+.row .grow{flex:1;min-width:0}
+.row .name{font-weight:600}
+.row .sub{color:var(--ink2);font-size:13px}
+button{font-family:inherit;font-size:16px;border:none;border-radius:10px;cursor:pointer;min-height:44px;padding:10px 16px}
+.btn{background:var(--teal);color:#fff;font-weight:600;width:100%}
+.btn.sec{background:var(--page);color:var(--ink);border:1px solid var(--hair)}
+.btn.danger{background:var(--red-bg);color:var(--red)}
+.btn.small{min-height:38px;padding:6px 12px;font-size:14px;width:auto}
+.iconbtn{background:none;border:none;padding:8px;min-height:44px;min-width:44px;color:var(--ink2);font-size:18px;cursor:pointer}
+input,select{font-family:inherit;font-size:16px;padding:12px;border:1px solid var(--hair);border-radius:10px;width:100%;background:#fff;color:var(--ink);min-height:48px}
+label{display:block;font-size:13px;color:var(--ink2);margin:10px 0 4px}
+.check{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink4);display:flex;align-items:center;justify-content:center;flex:none;font-size:17px;color:#fff;background:#fff}
+.on .check{background:var(--teal);border-color:var(--teal)}
+.row.on{border-color:var(--teal);background:#f2f7f5}
+.rowbtn{width:100%;text-align:start;background:none;border:none;padding:0;min-height:0}
+.warn{background:#fdf6e8;border:1px solid #ecd9a8;border-radius:10px;padding:10px 12px;margin:0 0 8px;font-size:14px;display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.countbar{background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.countbar .num{font-size:22px;font-weight:700;color:var(--teal-d)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.fact{background:var(--page);border:1px solid var(--hair);border-radius:var(--r);padding:10px 12px}
+.fact .k{font-size:12px;color:var(--ink2)}
+.fact .v{font-size:18px;font-weight:700}
+.fact.big{grid-column:1/-1;background:#f2f7f5;border-color:var(--teal)}
+.fact.big .v{color:var(--teal-d);font-size:24px}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--page);border-top:1px solid var(--hair);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs button{flex:1;background:none;border:none;padding:8px 2px 10px;font-size:12px;color:var(--ink2);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:56px;cursor:pointer}
+nav.tabs button .ic{font-size:20px}
+nav.tabs button.on{color:var(--teal-d);font-weight:700}
+.empty{text-align:center;color:var(--ink2);padding:28px 10px}
+.modal{position:fixed;inset:0;background:rgba(37,31,33,.4);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.modal .sheet{background:var(--sand);border-radius:18px 18px 0 0;width:100%;max-width:560px;padding:18px 16px calc(env(safe-area-inset-bottom,0px) + 18px);max-height:85vh;overflow:auto}
+.sheet h3{margin:0 0 8px;font-size:17px}
+.sheet .actions{display:flex;gap:8px;margin-top:14px}
+.sheet .actions .btn{flex:1}
+.dayblock{margin-bottom:14px}
+.dayhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.dayhead .d{font-weight:700}
+.names{display:flex;flex-wrap:wrap;gap:6px}
+.names span{background:#f2f7f5;border:1px solid var(--teal);color:var(--teal-d);border-radius:999px;padding:4px 12px;font-size:13px}
+.stmt{white-space:pre-wrap;background:var(--page);border:1px dashed var(--teal);border-radius:var(--r);padding:12px;font-size:14px;margin:10px 0}
+.notice{background:#eef4f2;border:1px solid var(--teal);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--teal-d);margin-bottom:12px}
+.del{color:var(--red)}
+@media (min-width:560px){ body{background:var(--sand)} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div>
+      <h1 id="appTitle">دفتر المعلم</h1>
+      <div class="today" id="todayLine"></div>
+    </div>
+    <button class="iconbtn" id="langBtn" title="Türkçe">TR</button>
+  </header>
+  <main id="view"></main>
+  <nav class="tabs" id="tabs"></nav>
+</div>
+<script>
+"use strict";
+const KEY='daftar-elmalem.v1';
+const STR={
+ar:{
+  appName:'دفتر المعلم', attendance:'الحضور', days:'الأيام', workers:'العمال', settings:'الإعدادات',
+  sites:'المواقع', addSite:'أضف موقع', siteName:'اسم الموقع', add:'أضف', cancel:'إلغاء', save:'حفظ',
+  workersCount:'عدد العمال', chooseSite:'اختار الموقع', addWorker:'أضف عامل', workerName:'اسم العامل',
+  dailyWage:'اليومية', startDate:'من تاريخ', noSites:'لسه مفيش مواقع. اضغط «أضف موقع» وابدأ.',
+  noWorkers:'لسه مفيش عمال. ضيفهم من تحت.', noDays:'لسه مفيش حضور متسجل.',
+  alreadyOtherSite:'متسجل النهارده في موقع', moveHere:'انقله هنا',
+  daysWorked:'أيام الشغل', earned:'المستحق', advances:'السلف', remaining:'الباقي له',
+  addAdvance:'سجّل سلفة', amount:'المبلغ', note:'ملاحظة', changeWage:'غيّر اليومية', newWage:'اليومية الجديدة',
+  statement:'كشف حساب', copy:'نسخ الكشف', whatsapp:'ابعته على واتساب', copied:'اتنسخ ✓',
+  hisDays:'أيام شغله', hisAdvances:'سلفه', del:'مسح', edit:'تعديل', confirmDelWorker:'مسح العامل ده وكل حضوره وسلفه؟',
+  language:'اللغة', currency:'العملة', backup:'نسخة احتياطية', export:'تصدير البيانات', importBtn:'استرجاع نسخة',
+  clearAll:'مسح كل البيانات', confirmClear:'متأكد؟ كل الحضور والحسابات هتتمسح من الموبايل ده.',
+  localNote:'البيانات بتتحفظ على الموبايل ده بس. اعمل نسخة احتياطية كل فترة من هنا.',
+  importDone:'النسخة اترجعت ✓', importFail:'الملف ده مش نسخة صح',
+  until:'لحد', day:'يوم', back:'رجوع', date:'التاريخ', site:'الموقع', ofSite:'في', deleteRow:'مسح السطر',
+  wageFrom:'اليومية من يوم', oldKept:'الأيام الأديمة بتفضل بسعرها',
+  noWorkersDay:'مفيش عمال متسجلين في اليوم ده', all:'الكل'
+},
+tr:{
+  appName:'Usta Defteri', attendance:'Yoklama', days:'Günler', workers:'İşçiler', settings:'Ayarlar',
+  sites:'Şantiyeler', addSite:'Şantiye ekle', siteName:'Şantiye adı', add:'Ekle', cancel:'Vazgeç', save:'Kaydet',
+  workersCount:'İşçi sayısı', chooseSite:'Şantiye seç', addWorker:'İşçi ekle', workerName:'İşçi adı',
+  dailyWage:'Yevmiye', startDate:'Başlangıç tarihi', noSites:'Henüz şantiye yok. «Şantiye ekle» ile başla.',
+  noWorkers:'Henüz işçi yok. Aşağıdan ekle.', noDays:'Henüz yoklama kaydı yok.',
+  alreadyOtherSite:'Bugün başka şantiyede kayıtlı', moveHere:'Buraya taşı',
+  daysWorked:'Çalışılan gün', earned:'Hak ediş', advances:'Avanslar', remaining:'Kalan',
+  addAdvance:'Avans ekle', amount:'Tutar', note:'Not', changeWage:'Yevmiyeyi değiştir', newWage:'Yeni yevmiye',
+  statement:'Hesap özeti', copy:'Özeti kopyala', whatsapp:'WhatsApp ile gönder', copied:'Kopyalandı ✓',
+  hisDays:'Çalıştığı günler', hisAdvances:'Avansları', del:'Sil', edit:'Düzenle', confirmDelWorker:'Bu işçi ve tüm kayıtları silinsin mi?',
+  language:'Dil', currency:'Para birimi', backup:'Yedek', export:'Verileri dışa aktar', importBtn:'Yedeği geri yükle',
+  clearAll:'Tüm verileri sil', confirmClear:'Emin misin? Bu telefondaki tüm kayıtlar silinecek.',
+  localNote:'Veriler sadece bu telefonda saklanır. Buradan düzenli yedek al.',
+  importDone:'Yedek geri yüklendi ✓', importFail:'Bu dosya geçerli bir yedek değil',
+  until:'Bitiş', day:'gün', back:'Geri', date:'Tarih', site:'Şantiye', ofSite:'şantiyesinde', deleteRow:'Satırı sil',
+  wageFrom:'Yevmiye başlangıcı', oldKept:'Eski günler eski fiyatla kalır',
+  noWorkersDay:'Bu günde kayıtlı işçi yok', all:'Tümü'
+}};
+let S=load();
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===1)return s;}catch(e){}
+  return {v:1,lang:'ar',currency:'₺',sites:[],workers:[],attendance:{},advances:[]};}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const T=()=>STR[S.lang];
+const nf=()=>new Intl.NumberFormat(S.lang==='ar'?'ar-EG-u-nu-latn':'tr-TR');
+const loc=()=>S.lang==='ar'?'ar-EG-u-nu-latn':'tr-TR';
+const fmtMoney=n=>nf().format(n)+' '+S.currency;
+function fmtDate(iso,withYear){const d=new Date(iso+'T12:00:00');return new Intl.DateTimeFormat(loc(),{weekday:'long',day:'numeric',month:'long',...(withYear?{year:'numeric'}:{})}).format(d);}
+function fmtDateShort(iso){const d=new Date(iso+'T12:00:00');return new Intl.DateTimeFormat(loc(),{day:'numeric',month:'numeric',year:'2-digit'}).format(d);}
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const siteName=id=>{const s=S.sites.find(x=>x.id===id);return s?s.name:'—';};
+const worker=id=>S.workers.find(w=>w.id===id);
+function wageAt(w,iso){let best=null;for(const h of w.history){if(h.from<=iso&&(!best||h.from>best.from))best=h;}
+  if(!best){best=w.history.reduce((a,h)=>!a||h.from<a.from?h:a,null);} return best?best.daily:0;}
+const currentWage=w=>w.history.length?w.history.reduce((a,h)=>h.from>=a.from?h:a).daily:0;
+function* allAttendance(){for(const [date,sites] of Object.entries(S.attendance))for(const [sid,ids] of Object.entries(sites))for(const wid of ids)yield{date,sid,wid};}
+function workerStats(wid){const w=worker(wid);let days=0,earned=0;const list=[];
+  for(const a of allAttendance())if(a.wid===wid){const wg=wageAt(w,a.date);days++;earned+=wg;list.push({...a,wage:wg});}
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+  const adv=S.advances.filter(x=>x.workerId===wid);
+  const advTotal=adv.reduce((s,x)=>s+x.amount,0);
+  return {days,earned,adv,advTotal,remaining:earned-advTotal,list};}
+const initHash=(()=>{const h=(location.hash||'').slice(1);const [tab,arg]=h.split('/');
+  return {tab:['att','days','workers','settings'].includes(tab)?tab:'att',arg:arg||null};})();
+let view={tab:initHash.tab,date:todayISO(),siteId:null,workerId:initHash.tab==='workers'?initHash.arg:null,dayFilter:null};
+let modal=null;
+const viewEl=document.getElementById('view');
+function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstElementChild;}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function render(){
+  const t=T();
+  document.documentElement.lang=S.lang;
+  document.documentElement.dir=S.lang==='ar'?'rtl':'ltr';
+  document.getElementById('appTitle').textContent=t.appName;
+  document.getElementById('langBtn').textContent=S.lang==='ar'?'TR':'عر';
+  document.getElementById('todayLine').textContent=fmtDate(todayISO(),true);
+  const tabs=document.getElementById('tabs');
+  tabs.innerHTML='';
+  [['att','✓',t.attendance],['days','🗓',t.days],['workers','👷',t.workers],['settings','⚙️',t.settings]].forEach(([k,ic,label])=>{
+    const b=document.createElement('button');b.className=view.tab===k?'on':'';b.innerHTML='<span class="ic">'+ic+'</span>'+label;
+    b.onclick=()=>{view.tab=k;view.workerId=null;render();};tabs.appendChild(b);});
+  viewEl.innerHTML='';
+  if(view.tab==='att')renderAtt();else if(view.tab==='days')renderDays();else if(view.tab==='workers')renderWorkers();else renderSettings();
+  if(modal)renderModal();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Attendance ---------- */
+function renderAtt(){
+  const t=T();
+  if(!S.sites.length){viewEl.appendChild(el('<div class="card empty">'+t.noSites+'<br><br><button class="btn" id="addSiteBtn">'+t.addSite+'</button></div>'));
+    document.getElementById('addSiteBtn').onclick=()=>{modal={type:'site'};render();};return;}
+  if(!view.siteId||!S.sites.find(s=>s.id===view.siteId))view.siteId=S.sites[0].id;
+  const bar=el('<div class="card"><label>'+t.date+'</label><input type="date" id="dpick"></div>');
+  viewEl.appendChild(bar);
+  const dp=bar.querySelector('#dpick');dp.value=view.date;dp.onchange=()=>{view.date=dp.value||todayISO();render();};
+  const chips=el('<div class="chips"></div>');
+  S.sites.forEach(s=>{const c=document.createElement('button');c.className='chip'+(s.id===view.siteId?' on':'');c.textContent=s.name;
+    c.onclick=()=>{view.siteId=s.id;render();};chips.appendChild(c);});
+  const addC=document.createElement('button');addC.className='chip';addC.textContent='＋ '+t.addSite;addC.onclick=()=>{modal={type:'site'};render();};chips.appendChild(addC);
+  viewEl.appendChild(chips);
+  const day=S.attendance[view.date]||{};const ids=(day[view.siteId]||[]);
+  const cb=el('<div class="countbar"><div><div class="small muted">'+fmtDate(view.date,true)+'</div><div class="small muted">'+siteName(view.siteId)+'</div></div><div class="num">'+nf().format(ids.length)+' / '+nf().format(S.workers.length)+'</div></div>');
+  viewEl.appendChild(cb);
+  if(!S.workers.length){viewEl.appendChild(el('<div class="card empty">'+t.noWorkers+'</div>'));}
+  S.workers.forEach(w=>{
+    const present=ids.includes(w.id);
+    const otherSite=Object.entries(day).find(([sid,l])=>sid!==view.siteId&&l.includes(w.id));
+    const r=el('<div class="row'+(present?' on':'')+'"><span class="check">'+(present?'✓':'')+'</span><div class="grow"><div class="name">'+esc(w.name)+'</div><div class="sub">'+fmtMoney(currentWage(w))+' / '+t.day+'</div></div></div>');
+    r.onclick=()=>{toggleAtt(w.id);};
+    viewEl.appendChild(r);
+    if(!present&&otherSite){
+      const wn=el('<div class="warn"><span>⚠️ '+esc(w.name)+' '+t.alreadyOtherSite+' «'+esc(siteName(otherSite[0]))+'»</span><button class="btn sec small">'+t.moveHere+'</button></div>');
+      wn.querySelector('button').onclick=()=>{moveAtt(w.id,otherSite[0]);};
+      viewEl.appendChild(wn);}
+  });
+  const bw=el('<button class="btn sec" style="margin-top:6px">＋ '+t.addWorker+'</button>');
+  bw.onclick=()=>{modal={type:'worker'};render();};
+  viewEl.appendChild(bw);
+}
+function toggleAtt(wid){
+  const day=S.attendance[view.date]=S.attendance[view.date]||{};
+  const list=day[view.siteId]=day[view.siteId]||[];
+  const i=list.indexOf(wid);
+  if(i>=0)list.splice(i,1);else list.push(wid);
+  if(!list.length)delete day[view.siteId];
+  if(!Object.keys(day).length)delete S.attendance[view.date];
+  save();render();
+}
+function moveAtt(wid,fromSite){
+  const day=S.attendance[view.date];
+  const from=day[fromSite]||[];const i=from.indexOf(wid);if(i>=0)from.splice(i,1);
+  if(!from.length)delete day[fromSite];
+  (day[view.siteId]=day[view.siteId]||[]).push(wid);
+  save();render();
+}
+
+/* ---------- Days log ---------- */
+function renderDays(){
+  const t=T();
+  const dates=Object.keys(S.attendance).sort().reverse();
+  if(!dates.length){viewEl.appendChild(el('<div class="card empty">'+t.noDays+'</div>'));return;}
+  const chips=el('<div class="chips"></div>');
+  const mk=(id,label)=>{const c=document.createElement('button');c.className='chip'+(view.dayFilter===id?' on':'');c.textContent=label;c.onclick=()=>{view.dayFilter=id;render();};chips.appendChild(c);};
+  mk(null,t.all);S.sites.forEach(s=>mk(s.id,s.name));
+  viewEl.appendChild(chips);
+  dates.forEach(date=>{
+    const day=S.attendance[date];
+    const block=el('<div class="dayblock"><div class="dayhead"><span class="d">'+fmtDate(date,true)+'</span></div></div>');
+    let any=false;
+    Object.entries(day).forEach(([sid,ids])=>{
+      if(view.dayFilter&&sid!==view.dayFilter)return;
+      if(!ids.length)return;any=true;
+      const card=el('<div class="card"><div class="dayhead"><span>'+esc(siteName(sid))+'</span><span class="num" style="color:var(--teal-d);font-weight:700">'+nf().format(ids.length)+' '+T().workersCount+'</span></div><div class="names">'+ids.map(id=>'<span>'+esc(worker(id)?worker(id).name:'؟')+'</span>').join('')+'</div></div>');
+      block.appendChild(card);});
+    if(any)viewEl.appendChild(block);
+  });
+}
+
+/* ---------- Workers ---------- */
+function renderWorkers(){
+  const t=T();
+  if(view.workerId){renderWorkerDetail(view.workerId);return;}
+  if(!S.workers.length)viewEl.appendChild(el('<div class="card empty">'+t.noWorkers+'</div>'));
+  S.workers.forEach(w=>{
+    const st=workerStats(w.id);
+    const r=el('<div class="row"><div class="grow"><div class="name">'+esc(w.name)+'</div><div class="sub">'+fmtMoney(currentWage(w))+' / '+t.day+' · '+nf().format(st.days)+' '+t.daysWorked+'</div></div><div style="text-align:end"><div class="sub">'+t.remaining+'</div><div class="name" style="color:var(--teal-d)">'+fmtMoney(st.remaining)+'</div></div></div>');
+    r.onclick=()=>{view.workerId=w.id;render();};
+    viewEl.appendChild(r);});
+  const bw=el('<button class="btn" style="margin-top:6px">＋ '+t.addWorker+'</button>');
+  bw.onclick=()=>{modal={type:'worker'};render();};
+  viewEl.appendChild(bw);
+}
+function renderWorkerDetail(wid){
+  const t=T();const w=worker(wid);if(!w){view.workerId=null;render();return;}
+  const st=workerStats(wid);
+  const back=el('<button class="btn sec small" style="margin-bottom:10px">← '+t.back+'</button>');
+  back.onclick=()=>{view.workerId=null;render();};viewEl.appendChild(back);
+  const f=el('<div class="facts">'+
+    '<div class="fact"><div class="k">'+t.dailyWage+'</div><div class="v">'+fmtMoney(currentWage(w))+'</div></div>'+
+    '<div class="fact"><div class="k">'+t.daysWorked+'</div><div class="v">'+nf().format(st.days)+'</div></div>'+
+    '<div class="fact"><div class="k">'+t.earned+'</div><div class="v">'+fmtMoney(st.earned)+'</div></div>'+
+    '<div class="fact"><div class="k">'+t.advances+'</div><div class="v">'+fmtMoney(st.advTotal)+'</div></div>'+
+    '<div class="fact big"><div class="k">'+t.remaining+'</div><div class="v">'+fmtMoney(st.remaining)+'</div></div></div>');
+  viewEl.appendChild(f);
+  const acts=el('<div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>');
+  const b1=el('<button class="btn sec small">'+t.addAdvance+'</button>');b1.onclick=()=>{modal={type:'advance',wid};render();};
+  const b2=el('<button class="btn sec small">'+t.changeWage+'</button>');b2.onclick=()=>{modal={type:'wage',wid};render();};
+  const b3=el('<button class="btn sec small">'+t.edit+'</button>');b3.onclick=()=>{modal={type:'editWorker',wid};render();};
+  const b4=el('<button class="btn danger small">'+t.del+'</button>');b4.onclick=()=>{if(confirm(t.confirmDelWorker)){S.workers=S.workers.filter(x=>x.id!==wid);S.advances=S.advances.filter(x=>x.workerId!==wid);for(const[d,ss]of Object.entries(S.attendance))for(const[s,l]of Object.entries(ss)){const i=l.indexOf(wid);if(i>=0)l.splice(i,1);}view.workerId=null;save();render();}};
+  acts.append(b1,b2,b3,b4);viewEl.appendChild(acts);
+  // statement
+  const stmt=buildStatement(w,st);
+  const sc=el('<div class="card"><h2>'+t.statement+'</h2><div class="stmt">'+esc(stmt)+'</div></div>');
+  const row=el('<div style="display:flex;gap:8px"></div>');
+  const cp=el('<button class="btn sec" style="flex:1">'+t.copy+'</button>');
+  cp.onclick=()=>{navigator.clipboard.writeText(stmt).then(()=>{cp.textContent=t.copied;});};
+  const wa=el('<button class="btn" style="flex:1">'+t.whatsapp+'</button>');
+  wa.onclick=()=>{window.open('https://wa.me/?text='+encodeURIComponent(stmt),'_blank');};
+  row.append(cp,wa);sc.appendChild(row);viewEl.appendChild(sc);
+  // days list
+  const dc=el('<div class="card"><h2>'+t.hisDays+'</h2></div>');
+  if(!st.list.length)dc.appendChild(el('<div class="muted small">'+t.noWorkersDay+'</div>'));
+  st.list.forEach(a=>{dc.appendChild(el('<div class="row" style="min-height:44px;padding:8px 12px"><div class="grow"><div class="name" style="font-size:14px">'+fmtDate(a.date)+' <span class="muted">'+fmtDateShort(a.date)+'</span></div><div class="sub">'+esc(siteName(a.sid))+'</div></div><div class="sub">'+fmtMoney(a.wage)+'</div></div>'));});
+  viewEl.appendChild(dc);
+  // advances list
+  const ac=el('<div class="card"><h2>'+t.hisAdvances+'</h2></div>');
+  if(!st.adv.length)ac.appendChild(el('<div class="muted small">—</div>'));
+  st.adv.sort((a,b)=>b.date.localeCompare(a.date)).forEach(x=>{
+    const r=el('<div class="row" style="min-height:44px;padding:8px 12px"><div class="grow"><div class="name" style="font-size:14px">'+fmtMoney(x.amount)+'</div><div class="sub">'+fmtDate(x.date)+(x.note?' · '+esc(x.note):'')+'</div></div></div>');
+    const db=el('<button class="iconbtn del">✕</button>');db.title=t.deleteRow;
+    db.onclick=()=>{S.advances=S.advances.filter(y=>y.id!==x.id);save();render();};
+    r.appendChild(db);ac.appendChild(r);});
+  viewEl.appendChild(ac);
+}
+function buildStatement(w,st){
+  const t=T();
+  const L=[];
+  L.push(t.statement+': '+w.name);
+  L.push(t.until+' '+fmtDate(todayISO(),true));
+  L.push(t.daysWorked+': '+nf().format(st.days));
+  L.push(t.earned+': '+fmtMoney(st.earned));
+  L.push(t.advances+': '+fmtMoney(st.advTotal));
+  L.push(t.remaining+': '+fmtMoney(st.remaining));
+  if(st.list.length){L.push('');L.push(t.hisDays+':');
+    [...st.list].sort((a,b)=>a.date.localeCompare(b.date)).forEach(a=>L.push('· '+fmtDate(a.date)+' - '+siteName(a.sid)));}
+  return L.join('\n');
+}
+
+/* ---------- Settings ---------- */
+function renderSettings(){
+  const t=T();
+  const langCard=el('<div class="card"><h2>'+t.language+'</h2><div class="chips"><button class="chip'+(S.lang==='ar'?' on':'')+'" id="lar">العربية</button><button class="chip'+(S.lang==='tr'?' on':'')+'" id="ltr">Türkçe</button></div></div>');
+  langCard.querySelector('#lar').onclick=()=>{S.lang='ar';save();render();};
+  langCard.querySelector('#ltr').onclick=()=>{S.lang='tr';save();render();};
+  viewEl.appendChild(langCard);
+  const curCard=el('<div class="card"><h2>'+t.currency+'</h2><div class="chips"></div></div>');
+  const cc=curCard.querySelector('.chips');
+  [['₺','₺ ليرة'],['ج.م','ج.م جنيه'],['$','$ دولار']].forEach(([v,l])=>{const c=document.createElement('button');c.className='chip'+(S.currency===v?' on':'');c.textContent=l;c.onclick=()=>{S.currency=v;save();render();};cc.appendChild(c);});
+  viewEl.appendChild(curCard);
+  const bCard=el('<div class="card"><h2>'+t.backup+'</h2><div class="notice">'+t.localNote+'</div></div>');
+  const be=el('<button class="btn sec" style="width:100%;margin-bottom:8px">'+t.export+'</button>');
+  be.onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='daftar-backup-'+todayISO()+'.json';a.click();};
+  const bi=el('<button class="btn sec" style="width:100%">'+t.importBtn+'</button>');
+  bi.onclick=()=>{const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
+    inp.onchange=()=>{const f=inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const s=JSON.parse(rd.result);if(s&&s.v===1){S=s;save();alert(t.importDone);render();}else alert(t.importFail);}catch(e){alert(t.importFail);}};rd.readAsText(f);};inp.click();};
+  bCard.append(be,bi);viewEl.appendChild(bCard);
+  const clr=el('<button class="btn danger" style="width:100%">'+t.clearAll+'</button>');
+  clr.onclick=()=>{if(confirm(t.confirmClear)){localStorage.removeItem(KEY);S=load();save();render();}};
+  viewEl.appendChild(clr);
+}
+
+/* ---------- Modals ---------- */
+function renderModal(){
+  const t=T();const m=modal;
+  const wrap=el('<div class="modal"><div class="sheet"></div></div>');
+  const sh=wrap.querySelector('.sheet');
+  const close=()=>{modal=null;render();};
+  wrap.onclick=e=>{if(e.target===wrap)close();};
+  if(m.type==='site'){
+    sh.innerHTML='<h3>'+t.addSite+'</h3><label>'+t.siteName+'</label><input id="f1" maxlength="60">';
+    const a=el('<div class="actions"><button class="btn sec">'+t.cancel+'</button><button class="btn">'+t.add+'</button></div>');
+    const [c,ok]=a.children;c.onclick=close;
+    ok.onclick=()=>{const v=sh.querySelector('#f1').value.trim();if(!v)return;S.sites.push({id:uid(),name:v});save();close();};
+    sh.appendChild(a);
+  }else if(m.type==='worker'){
+    sh.innerHTML='<h3>'+t.addWorker+'</h3><label>'+t.workerName+'</label><input id="f1" maxlength="60"><label>'+t.dailyWage+' ('+S.currency+')</label><input id="f2" type="number" inputmode="decimal" min="0" step="any"><label>'+t.startDate+'</label><input id="f3" type="date">';
+    sh.querySelector('#f3').value=todayISO();
+    const a=el('<div class="actions"><button class="btn sec">'+t.cancel+'</button><button class="btn">'+t.add+'</button></div>');
+    const [c,ok]=a.children;c.onclick=close;
+    ok.onclick=()=>{const n=sh.querySelector('#f1').value.trim();const w=parseFloat(sh.querySelector('#f2').value);const d=sh.querySelector('#f3').value||todayISO();
+      if(!n||!(w>0))return;S.workers.push({id:uid(),name:n,history:[{from:d,daily:w}]});save();close();};
+    sh.appendChild(a);
+  }else if(m.type==='advance'){
+    sh.innerHTML='<h3>'+t.addAdvance+'</h3><label>'+t.amount+' ('+S.currency+')</label><input id="f1" type="number" inputmode="decimal" min="0" step="any"><label>'+t.date+'</label><input id="f2" type="date"><label>'+t.note+'</label><input id="f3" maxlength="80">';
+    sh.querySelector('#f2').value=todayISO();
+    const a=el('<div class="actions"><button class="btn sec">'+t.cancel+'</button><button class="btn">'+t.save+'</button></div>');
+    const [c,ok]=a.children;c.onclick=close;
+    ok.onclick=()=>{const amt=parseFloat(sh.querySelector('#f1').value);if(!(amt>0))return;
+      S.advances.push({id:uid(),workerId:m.wid,amount:amt,date:sh.querySelector('#f2').value||todayISO(),note:sh.querySelector('#f3').value.trim()});save();close();};
+    sh.appendChild(a);
+  }else if(m.type==='wage'){
+    const w=worker(m.wid);
+    sh.innerHTML='<h3>'+t.changeWage+'</h3><div class="notice">'+t.oldKept+'</div><label>'+t.newWage+' ('+S.currency+')</label><input id="f1" type="number" inputmode="decimal" min="0" step="any" value="'+currentWage(w)+'"><label>'+t.wageFrom+'</label><input id="f2" type="date">';
+    sh.querySelector('#f2').value=todayISO();
+    const a=el('<div class="actions"><button class="btn sec">'+t.cancel+'</button><button class="btn">'+t.save+'</button></div>');
+    const [c,ok]=a.children;c.onclick=close;
+    ok.onclick=()=>{const nw=parseFloat(sh.querySelector('#f1').value);if(!(nw>0))return;
+      const from=sh.querySelector('#f2').value||todayISO();
+      w.history=w.history.filter(h=>h.from!==from);w.history.push({from,daily:nw});save();close();};
+    sh.appendChild(a);
+  }else if(m.type==='editWorker'){
+    const w=worker(m.wid);
+    sh.innerHTML='<h3>'+t.edit+'</h3><label>'+t.workerName+'</label><input id="f1" maxlength="60" value="'+esc(w.name)+'">';
+    const a=el('<div class="actions"><button class="btn sec">'+t.cancel+'</button><button class="btn">'+t.save+'</button></div>');
+    const [c,ok]=a.children;c.onclick=close;
+    ok.onclick=()=>{const v=sh.querySelector('#f1').value.trim();if(v)w.name=v;save();close();};
+    sh.appendChild(a);
+  }
+  document.body.appendChild(wrap);
+  setTimeout(()=>{const i=sh.querySelector('input:not([type=date])');if(i)i.focus();},50);
+}
+
+document.getElementById('langBtn').onclick=()=>{S.lang=S.lang==='ar'?'tr':'ar';save();render();};
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
